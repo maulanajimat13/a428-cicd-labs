@@ -1,18 +1,15 @@
+// Skeleton Project
 pipeline {
     agent {
         docker {
-            image 'node:lts-buster-slim'
-            args '-p 3000:3000'
+            image 'node:16-buster-slim' 
+            args '-p 3000:3000' 
         }
     }
-    environment {
-        CI = 'true'
-    }
     stages {
-        stage('Build') {
+        stage('Build') { 
             steps {
-                sh 'npm install'
-                
+                sh 'npm install' 
             }
         }
         stage('Test') {
@@ -20,13 +17,20 @@ pipeline {
                 sh './jenkins/scripts/test.sh'
             }
         }
-        stage('Deliver') {
+        stage('Manual Approval') {
+            steps {
+                // Menunggu persetujuan manual
+                input message: 'Lanjutkan ke tahap Deploy?'
+            }
+        }
+        stage('Deploy') {
             steps {
                 sh './jenkins/scripts/deliver.sh'
-                input message: 'Finished using the web site? (Click "Proceed" to continue)'
+                // User bisa melakukan test App's selama se-menit
+                sh 'sleep 1m'
                 sh './jenkins/scripts/kill.sh'
-                
             }
         }
     }
 }
+// Skeleton Project
